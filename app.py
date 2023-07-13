@@ -1,9 +1,11 @@
 
 import streamlit as st
 import openai
+import os
+
 import secret_keys  # 外部ファイルにAPI keyを保存
 
-openai.api_key = secret_keys.openai_api_key
+openai.api_key = os.getenv('OPENAI_API_KEY') # 環境変数からAPIキーを取得
 
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
