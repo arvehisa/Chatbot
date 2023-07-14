@@ -8,7 +8,7 @@ openai.api_key = os.environ['OPENAI_API_KEY']
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "回答を50文字以内にしてください。また回答するときに最後に「あん」とつけて回答してください"}
+        {"role": "system", "content": "回答を50文字以内にしてください。また回答の最後に「にゃん」とつけてください"}
         ]
 
 # チャットボットとやりとりする関数
@@ -31,7 +31,7 @@ def communicate():
 
 # ユーザーインターフェイスの構築
 st.title("My AI Assistant")
-st.write("ChatGPT APIを使ったチャットボットです。1705")
+st.write("ChatGPT APIを使ったチャットボットです。")
 
 user_input = st.text_input("メッセージを入力してください。", key="user_input", on_change=communicate)
 
