@@ -1,34 +1,9 @@
 
 import streamlit as st
 import openai
-import boto3
-import json
-from botocore.exceptions import ClientError
+import os
 
-def get_secret():
-
-    secret_name = "OPEN_AI_API"
-    region_name = "ap-northeast-1"
-
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
-
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
-    except ClientError as e:
-        raise e
-
-    secret_json = json.loads(get_secret_value_response['SecretString'])
-    api_key = secret_json['OPENAI_API_KEY'] 
-
-    return api_key
-
-openai.api_key = get_secret()
+openai.api_key = os.environ['OPENAI_API_KEY']
 
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
