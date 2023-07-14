@@ -1,16 +1,39 @@
 
 import streamlit as st
 import openai
-import os
+import boto3
+import json
+from botocore.exceptions import ClientError
 
-#import secret_keys  # 外部ファイルにAPI keyを保存 →環境変数にできたのでいらなくなった
+def get_secret():
 
-openai.api_key = os.getenv('OPENAI_API_KEY') # 環境変数からAPIキーを取得
+    secret_name = "OPEN_AI_API"
+    region_name = "ap-northeast-1"
+
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        raise e
+
+    secret_json = json.loads(get_secret_value_response['SecretString'])
+    api_key = secret_json['OPENAI_API_KEY'] 
+
+    return api_key
+
+openai.api_key = get_secret()
 
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "回答を50文字以内にしてください。また回答するときに最後に「にゃん」とつけて回答してください"}
+        {"role": "system", "content": "回答を50文字以内にしてください。また回答するときに最後に「あん」とつけて回答してください"}
         ]
 
 # チャットボットとやりとりする関数

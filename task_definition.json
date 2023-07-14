@@ -1,0 +1,90 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ap-northeast-1:618044871166:task-definition/Chatbot_ARM:3",
+    "containerDefinitions": [
+        {
+            "name": "chatbot",
+            "image": "618044871166.dkr.ecr.ap-northeast-1.amazonaws.com/chatbot",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "chatbot-8501-tcp",
+                    "containerPort": 8501,
+                    "hostPort": 8501,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "secrets": [
+                {
+                  "name": "OPENAI_API_KEY",
+                  "valueFrom": "arn:aws:secretsmanager:ap-northeast-1:618044871166:secret:OPEN_AI_API-scjYEb"
+                }
+              ],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/Chatbot_ARM",
+                    "awslogs-region": "ap-northeast-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ],
+    "family": "Chatbot_ARM",
+    "executionRoleArn": "arn:aws:iam::618044871166:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 3,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
+        "cpuArchitecture": "ARM64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2023-07-14T04:45:49.146Z",
+    "registeredBy": "arn:aws:sts::618044871166:assumed-role/Admin/zhxinzhi-Isengard",
+    "tags": []
+    
+}
