@@ -3,14 +3,14 @@ import streamlit as st
 import openai
 import os
 
-import secret_keys  # 外部ファイルにAPI keyを保存
+#import secret_keys  # 外部ファイルにAPI keyを保存 →環境変数にできたのでいらなくなった
 
 openai.api_key = os.getenv('OPENAI_API_KEY') # 環境変数からAPIキーを取得
 
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "回答を50文字以内にしてください"}
+        {"role": "system", "content": "回答を50文字以内にしてください。また回答するときに最後に「にゃん」とつけて回答してください"}
         ]
 
 # チャットボットとやりとりする関数
