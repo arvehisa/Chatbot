@@ -2,7 +2,7 @@
     "containerDefinitions": [
         {
             "name": "chatbot",
-            "image": "${IMAGE_NAME}:${TAG}",
+            "image": "${{ steps.build-image.outputs.image }}",
             "cpu": 0,
             "portMappings": [
                 {
@@ -36,7 +36,7 @@
             }
         }
     ],
-    "family": "Chatbot_ARM",
+    "family": "Chatbot_x86",
     "executionRoleArn": "arn:aws:iam::618044871166:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
     "volumes": [],
@@ -47,9 +47,8 @@
     "cpu": "1024",
     "memory": "3072",
     "runtimePlatform": {
-        "cpuArchitecture": "ARM64",
+        "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
     "tags": []
-    
 }
