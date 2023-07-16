@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime
 
 #DynamoDB への接続
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
 table = dynamodb.Table('chatbot-history')
 
 def save_message_to_dynamodb(session_id, timestamp, message, sender):
