@@ -1,4 +1,3 @@
-
 import streamlit as st
 import openai
 import os
@@ -35,6 +34,13 @@ def communicate():
     user_message = {"role": "user", "content": st.session_state["user_input"]}
     messages.append(user_message)
 
+    # DynamoDB への保存
+    timestamp = datetime.now()
+    # すでにセッション ID がある場合はそれを使い、ない場合は新たに生成
+    if 'session_id' not in st.session_state:
+        st.session_state['session_id'] = str(uuid.uuid4())
+    save_message_to_dynamodb(st.session_state['session_id'], timestamp, user_message["content"], 'user')
+
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages
@@ -45,10 +51,6 @@ def communicate():
 
     # DynamoDB への保存
     timestamp = datetime.now()
-    # すでにセッション ID がある場合はそれを使い、ない場合は新たに生成
-    if 'session_id' not in st.session_state:
-        st.session_state['session_id'] = str(uuid.uuid4())
-    save_message_to_dynamodb(st.session_state['session_id'], timestamp, user_message["content"], 'user')
     save_message_to_dynamodb(st.session_state['session_id'], timestamp, bot_message["content"], 'assistant')
 
     st.session_state["user_input"] = ""  # 入力欄を消去
