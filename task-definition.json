@@ -38,6 +38,7 @@
     ],
     "family": "Chatbot_x86",
     "executionRoleArn": "arn:aws:iam::618044871166:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::618044871166:role/chatbot-ecs-task-role",
     "networkMode": "awsvpc",
     "volumes": [],
     "placementConstraints": [],
