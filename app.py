@@ -4,6 +4,7 @@ import os
 import boto3
 import uuid
 from datetime import datetime
+import pytz
 
 #DynamoDB への接続
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
@@ -34,8 +35,8 @@ def communicate():
     user_message = {"role": "user", "content": st.session_state["user_input"]}
     messages.append(user_message)
 
-    # DynamoDB への保存
-    timestamp = datetime.now()
+    # DynamoDB への保存, timestamp を東京時間にする
+    timestamp = datetime.now(pytz.timezone('Asia/Tokyo'))
     # すでにセッション ID がある場合はそれを使い、ない場合は新たに生成
     if 'session_id' not in st.session_state:
         st.session_state['session_id'] = str(uuid.uuid4())
@@ -50,7 +51,7 @@ def communicate():
     messages.append(bot_message)
 
     # DynamoDB への保存
-    timestamp = datetime.now()
+    timestamp = datetime.now(pytz.timezone('Asia/Tokyo'))
     save_message_to_dynamodb(st.session_state['session_id'], timestamp, bot_message["content"], 'assistant')
 
     st.session_state["user_input"] = ""  # 入力欄を消去
