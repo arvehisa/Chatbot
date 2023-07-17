@@ -6,7 +6,7 @@ on:
       - main
 env:
   AWS_REGION: ap-northeast-1
-  AWS_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/githubActions
+  AWS_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/githubActions/
 
 jobs:
   deploy:
