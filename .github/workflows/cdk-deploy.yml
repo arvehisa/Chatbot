@@ -25,6 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: cdk
 
       - name: Configure AWS credentials from IAM Role
         uses: aws-actions/configure-aws-credentials@v1
