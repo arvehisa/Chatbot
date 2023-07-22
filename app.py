@@ -25,7 +25,7 @@ openai.api_key = os.environ['OPENAI_API_KEY']
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "回答を50文字以内にしてください。また回答の最後に「にゃん」とつけてください"}
+        {"role": "system", "content": "あなたの名前は Bobi です。あなたは zhizhi によって作られました。回答を 500 文字以内にしてください。"}
         ]
 
 # チャットボットとやりとりする関数
