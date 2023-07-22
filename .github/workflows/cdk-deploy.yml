@@ -1,0 +1,38 @@
+name: CDK Deploy
+
+on:
+  push:
+    paths:
+      - 'cdk/**'
+    branches:
+      - main
+env:
+    AWS_REGION: ap-northeast-1
+    AWS_ROLE_ARN: arn:aws:iam::618044871166:role/githubActions # GitHubActions用に作成したIAMロールのARN 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials from IAM Role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: CDK Deploy
+        run: npx cdk deploy
+        env:
+          DOCKER_IMAGE_NAME: ${{ env.IMAGE_NAME }}

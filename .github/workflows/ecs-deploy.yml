@@ -49,6 +49,9 @@ jobs:
         container-name: chatbot
         image: ${{ steps.build-image.outputs.image }}
 
+    - name: Export image name to environment variable
+      run: echo "IMAGE_NAME=${{ steps.build-image.outputs.image }}" >> $GITHUB_ENV
+
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
