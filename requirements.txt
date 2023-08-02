@@ -4,3 +4,5 @@ openai==0.27.8
 urllib3==1.26.6 
 pytz
 langchain
+requests
+requests_aws4auth
