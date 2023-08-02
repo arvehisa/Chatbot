@@ -1,10 +1,14 @@
 import streamlit as st
-import openai
+from langchain.llms import OpenAI
 import os
 import boto3
 import uuid
 from datetime import datetime
 import pytz
+import json
+import requests 
+from requests_aws4auth import AWS4Auth
+
 
 #DynamoDB への接続
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
@@ -20,7 +24,26 @@ def save_message_to_dynamodb(session_id, timestamp, message, sender):
         }
     )
 
-openai.api_key = os.environ['OPENAI_API_KEY']
+#Opensearch への接続
+region = 'ap-northeast-1'
+service = 'es'
+credentials = boto3.Session().get_credentials()
+awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service, session_token=credentials.token)
+
+host = 'https://search-opensearch-labs-domain-3hvjcrfuwdw7ufpwtuwp6sj2wi.ap-northeast-1.es.amazonaws.com'
+index = 'chat_bot_history'
+url = f"{host}/{index}/_doc/_search"
+
+#Opensearch からのデータを取得する関数
+def fetch_from_opensearch(query):
+    headers = { "Content-Type": "application/json" }
+    r = requests.post(url, auth=awsauth, headers=headers, json=query)
+    res = json.loads(r.text)
+    return res
+
+# Use OpenAI from LangChain
+llm = OpenAI(temperature=0.5)
+OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
@@ -42,12 +65,10 @@ def communicate():
         st.session_state['session_id'] = str(uuid.uuid4())
     save_message_to_dynamodb(st.session_state['session_id'], timestamp, user_message["content"], 'user')
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=messages
-    )  
+    #get response from langchain llm
+    response = llm(user_message["content"]).strip()
 
-    bot_message = response["choices"][0]["message"]
+    bot_message = {"role": "assistant", "content": response}
     messages.append(bot_message)
 
     # DynamoDB への保存
@@ -55,6 +76,12 @@ def communicate():
     save_message_to_dynamodb(st.session_state['session_id'], timestamp, bot_message["content"], 'assistant')
 
     st.session_state["user_input"] = ""  # 入力欄を消去
+
+# DDB から全てのメッセージを取得する関数
+def read_all_messages_from_dynamodb():
+    # 全てのメッセージを取得するためのScanを行います。
+    response = table.scan()
+    return response['Items']
 
 
 # ユーザーインターフェイスの構築
@@ -72,3 +99,22 @@ if st.session_state["messages"]:
             speaker="🤖"
 
         st.write(speaker + ": " + message["content"])
+
+
+st.title("Chat History")
+search_query = st.text_input("検索ワードを入力してください。")
+
+if search_query:
+    # 検索クエリを OpenSearch 用にフォーマット
+    query = {
+        "size": 25,
+        "query": {
+            "multi_match": {
+                "query": search_query,
+                "fields": ["_source.message^4"] 
+            }
+        }
+    }
+
+    results = fetch_from_opensearch(query)
+    st.write(results)
