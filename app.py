@@ -30,7 +30,7 @@ service = 'es'
 credentials = boto3.Session().get_credentials()
 awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service, session_token=credentials.token)
 
-host = 'https://search-opensearch-labs-domain-3hvjcrfuwdw7ufpwtuwp6sj2wi.ap-northeast-1.es.amazonaws.com'
+host = 'https://search-chatbot-es-domain-b7v2dauip2x2dtisd2i36yf64i.ap-northeast-1.es.amazonaws.com'
 index = 'chat_bot_history'
 url = f"{host}/{index}/_doc/_search"
 
