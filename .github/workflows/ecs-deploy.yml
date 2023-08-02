@@ -6,23 +6,20 @@ on:
       - main
 env:
   AWS_REGION: ap-northeast-1
-  AWS_ROLE_ARN: arn:aws:iam::618044871166:role/githubActions # GitHubActions用に作成したIAMロールのARN                   
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
     - name: Check out source code
       uses: actions/checkout@v2
 
-    - name: Configure AWS credentials from IAM Role
+    - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ env.AWS_ROLE_ARN }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
@@ -38,7 +35,7 @@ jobs:
       run: |
         # Build a docker container and push it to ECR
         docker buildx create --use
-        docker buildx build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ecs --push
+        docker buildx build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . --push
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         
     - name: Fill in the new image ID in the Amazon ECS task definition
@@ -48,9 +45,6 @@ jobs:
         task-definition: task-definition.json
         container-name: chatbot
         image: ${{ steps.build-image.outputs.image }}
-
-    - name: Export image name to environment variable
-      run: echo "IMAGE_NAME=${{ steps.build-image.outputs.image }}" >> $GITHUB_ENV
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
