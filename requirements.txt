@@ -6,3 +6,4 @@ pytz
 langchain
 requests
 requests_aws4auth
+pandas

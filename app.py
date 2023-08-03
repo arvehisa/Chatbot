@@ -8,6 +8,7 @@ import pytz
 import json
 import requests 
 from requests_aws4auth import AWS4Auth
+import pandas as pd
 
 
 #DynamoDB への接続
@@ -35,9 +36,11 @@ index = 'chat_bot_history'
 url = f"{host}/{index}/_doc/_search"
 
 #Opensearch からのデータを取得する関数
-def fetch_from_opensearch(query):
+def search_in_opensearch(query, index_name):
+    endpoint = host
+    url = f"{endpoint}/{index_name}/_search"
     headers = { "Content-Type": "application/json" }
-    r = requests.post(url, auth=awsauth, headers=headers, json=query)
+    r = requests.get(url, auth=awsauth, headers=headers, json=query)
     res = json.loads(r.text)
     return res
 
@@ -111,10 +114,28 @@ if search_query:
         "query": {
             "multi_match": {
                 "query": search_query,
-                "fields": ["_source.message^4"] 
+                "fields": ["sender", "message"]
             }
         }
     }
+    index_name = "chat_bot_history"
+    results = search_in_opensearch(query, index_name)
 
-    results = fetch_from_opensearch(query)
-    st.write(results)
+    # 結果を保存するためのデータフレームのリストを作成する
+    dataframes = []
+
+    for hit in results["hits"]["hits"]:
+        # _source内の"sender", "message"と"timestamp"を取り出す
+        sender = hit["_source"]["sender"]
+        message = hit["_source"]["message"]
+        timestamp = hit["_source"]["timestamp"]
+
+        # データフレームに結果を追加する
+        new_row = pd.DataFrame({"Sender": [sender], "Message": [message], "Timestamp": [timestamp]})
+        dataframes.append(new_row)
+
+    # データフレームを結合する
+    df = pd.concat(dataframes, ignore_index=True)
+
+    # Streamlitを使用してデータフレームを表示する
+    st.write(df)
