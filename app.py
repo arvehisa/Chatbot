@@ -51,7 +51,7 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "あなたの名前は Bobi です。あなたは zhizhi によって作られました。回答を 500 文字以内にしてください。"}
+        {"role": "system", "content": "あなたの名前はBobiです"} #ここのシステムプロンプトは効かなくなったきがする
         ]
 
 # チャットボットとやりとりする関数
@@ -124,18 +124,22 @@ if search_query:
     # 結果を保存するためのデータフレームのリストを作成する
     dataframes = []
 
-    for hit in results["hits"]["hits"]:
-        # _source内の"sender", "message"と"timestamp"を取り出す
-        sender = hit["_source"]["sender"]
-        message = hit["_source"]["message"]
-        timestamp = hit["_source"]["timestamp"]
+    if results["hits"]["hits"]:
+        for hit in results["hits"]["hits"]:
+            # _source内の"sender", "message"と"timestamp"を取り出す
+            sender = hit["_source"]["sender"]
+            message = hit["_source"]["message"]
+            timestamp = pd.to_datetime(hit["_source"]["timestamp"]) 
+            formatted_timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S") #タイムスタンプ形式を変更
 
-        # データフレームに結果を追加する
-        new_row = pd.DataFrame({"Sender": [sender], "Message": [message], "Timestamp": [timestamp]})
-        dataframes.append(new_row)
+            # データフレームに結果を追加する
+            new_row = pd.DataFrame({"Sender": [sender], "Message": [message], "Timestamp": [formatted_timestamp]})
+            dataframes.append(new_row)
 
-    # データフレームを結合する
-    df = pd.concat(dataframes, ignore_index=True)
+        # データフレームを結合する
+        df = pd.concat(dataframes, ignore_index=True)
 
-    # Streamlitを使用してデータフレームを表示する
-    st.write(df)
+        # Streamlitを使用してデータフレームを表示する
+        st.write(df)
+    else:
+        st.write("検索結果はありません。")
