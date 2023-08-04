@@ -88,8 +88,8 @@ def read_all_messages_from_dynamodb():
 
 
 # ユーザーインターフェイスの構築
-st.title("My AI Assistant")
-st.write("ChatGPT APIを使ったチャットボットです。")
+st.set_page_config(page_title="Icelandic Chatbot", page_icon="🧊")
+st.title("Icelandic Chatbot")
 
 user_input = st.text_input("メッセージを入力してください。", key="user_input", on_change=communicate)
 
