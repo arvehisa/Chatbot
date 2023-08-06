@@ -45,15 +45,14 @@ def search_in_opensearch(query, index_name):
     return res
 
 # Use OpenAI from LangChain
-llm = OpenAI(temperature=0.5)
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
+llm = OpenAI(temperature=0.5, model_name = "gpt-3.5-turbo-0301")
 
 # st.session_stateを使いメッセージのやりとりを保存
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
         {"role": "system", "content": "あなたの名前はBobiです"} #ここのシステムプロンプトは効かなくなったきがする
         ]
-
 # チャットボットとやりとりする関数
 def communicate():
     messages = st.session_state["messages"]
