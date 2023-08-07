@@ -113,6 +113,7 @@ if search_query:
         "query": {
             "multi_match": {
                 "query": search_query,
+                "analyzer": "japanese_analyzer",
                 "fields": ["sender", "message"]
             }
         }
