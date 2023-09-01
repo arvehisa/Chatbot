@@ -7,3 +7,4 @@ langchain
 requests
 requests_aws4auth
 pandas
+aws-xray-sdk

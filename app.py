@@ -9,7 +9,11 @@ import json
 import requests 
 from requests_aws4auth import AWS4Auth
 import pandas as pd
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch_all
 
+xray_recorder.configure(service='chatbot')
+patch_all()
 
 #DynamoDB への接続
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
@@ -114,7 +118,7 @@ if search_query:
             "multi_match": {
                 "query": search_query,
                 "analyzer": "japanese_analyzer",
-                "fields": ["sender", "message"]
+                "fields": ["sender", "message^4"]
             }
         }
     }
