@@ -53,6 +53,6 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: Chatbot_ARM_2
+        service: Chatbot
         cluster: DevCluster
         wait-for-service-stability: true
